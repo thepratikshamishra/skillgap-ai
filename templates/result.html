@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Report — SkillGap AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+      <a class="nav-logo" href="/">SkillGap AI</a>
+      <span class="nav-badge">Your Report</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="result-header">
+      <h1>Skill Analysis Report</h1>
+      <div class="result-role-tag">{{ result.target_role }}</div>
+
+      {% if from_resume %}
+      <div class="resume-notice">
+        ✓ Skills extracted from your resume by AI
+      </div>
+      {% endif %}
+
+      <!-- Score gauge -->
+      <div class="score-section">
+        <div class="gauge-wrap">
+          <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+            <circle class="gauge-bg"   cx="90" cy="90" r="80"/>
+            <circle class="gauge-fill" cx="90" cy="90" r="80" id="gaugeFill"/>
+          </svg>
+          <div class="gauge-center">
+            <span class="gauge-score" id="gaugeScore">0</span>
+            <span class="gauge-label">Readiness</span>
+          </div>
+        </div>
+
+        {% set score = result.readiness_score %}
+        {% if score >= 75 %}
+          <span class="score-verdict verdict-green">Strong Candidate ✓</span>
+        {% elif score >= 50 %}
+          <span class="score-verdict verdict-amber">Keep Building →</span>
+        {% else %}
+          <span class="score-verdict verdict-red">Early Stage — Great time to start</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Extracted skills from resume (if applicable) -->
+    {% if from_resume and extracted_skills %}
+    <div class="r-card full" style="margin-bottom:20px">
+      <div class="r-card-header">
+        <div class="r-card-icon icon-cyan">⬡</div>
+        <span class="r-card-title">Skills Extracted from Resume</span>
+        <span class="r-card-count">{{ extracted_skills|length }}</span>
+      </div>
+      <div class="tag-cloud">
+        {% for skill in extracted_skills %}
+        <span class="tag tag-extracted">{{ skill }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Results grid -->
+    <div class="results-grid">
+
+      <!-- Matched Skills -->
+      <div class="r-card">
+        <div class="r-card-header">
+          <div class="r-card-icon icon-green">✓</div>
+          <span class="r-card-title">Matched Skills</span>
+          <span class="r-card-count">{{ result.matched_skills|length }}</span>
+        </div>
+        <div class="skill-list">
+          {% for skill in result.matched_skills %}
+          <div class="skill-row">
+            <span class="skill-name">{{ skill.skill }}</span>
+            <div class="skill-bar-wrap">
+              <div class="skill-bar bar-green" style="width:{{ (skill.weight / 10) * 100 }}%"></div>
+            </div>
+            <span class="skill-weight">{{ skill.weight }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Missing Skills -->
+      <div class="r-card">
+        <div class="r-card-header">
+          <div class="r-card-icon icon-red">✕</div>
+          <span class="r-card-title">Missing Skills</span>
+          <span class="r-card-count">{{ result.missing_skills|length }}</span>
+        </div>
+        <div class="skill-list">
+          {% for skill in result.critical_gaps %}
+          <div class="skill-row">
+            <span class="skill-name">{{ skill.skill }}</span>
+            <div class="skill-bar-wrap">
+              <div class="skill-bar bar-red" style="width:{{ (skill.weight / 10) * 100 }}%"></div>
+            </div>
+            <span class="skill-weight">{{ skill.weight }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Projects -->
+      <div class="r-card">
+        <div class="r-card-header">
+          <div class="r-card-icon icon-cyan">⬡</div>
+          <span class="r-card-title">Projects to Build</span>
+        </div>
+        <div class="plain-list">
+          {% for project in result.recommended_projects %}
+          <div class="plain-item">
+            <span class="plain-bullet bullet-cyan"></span>
+            {{ project }}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Certifications -->
+      <div class="r-card">
+        <div class="r-card-header">
+          <div class="r-card-icon icon-purple">◈</div>
+          <span class="r-card-title">Certifications</span>
+        </div>
+        <div class="plain-list">
+          {% for cert in result.recommended_certifications %}
+          <div class="plain-item">
+            <span class="plain-bullet bullet-purple"></span>
+            {{ cert }}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Ignored Skills -->
+      {% if result.ignored_skills %}
+      <div class="r-card full">
+        <div class="r-card-header">
+          <div class="r-card-icon icon-amber">◌</div>
+          <span class="r-card-title">Skills Not Relevant to This Role</span>
+          <span class="r-card-count">{{ result.ignored_skills|length }}</span>
+        </div>
+        <div class="tag-cloud">
+          {% for skill in result.ignored_skills %}
+          <span class="tag">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- AI Roadmap -->
+      <div class="r-card full">
+        <div class="r-card-header">
+          <div class="r-card-icon icon-cyan">⟡</div>
+          <span class="r-card-title">AI Learning Roadmap</span>
+        </div>
+        <div class="roadmap-body">{{ roadmap }}</div>
+      </div>
+
+    </div>
+
+    <!-- Back -->
+    <div class="back-wrap">
+      <a href="/" class="btn-back">← Analyze Again</a>
+    </div>
+
+  </div>
+
+  <script>
+    const score        = {{ result.readiness_score }};
+    const circumference = 2 * Math.PI * 80;
+    const fill         = document.getElementById('gaugeFill');
+
+    // Color
+    if (score >= 75)      fill.style.stroke = '#10b981';
+    else if (score >= 50) fill.style.stroke = '#f59e0b';
+    else                  fill.style.stroke = '#f43f5e';
+
+    fill.style.strokeDasharray  = circumference;
+    fill.style.strokeDashoffset = circumference;
+
+    requestAnimationFrame(() => {
+      fill.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1)';
+      fill.style.strokeDashoffset = circumference - (score / 100) * circumference;
+    });
+
+    // Counter
+    const el   = document.getElementById('gaugeScore');
+    let cur    = 0;
+    const step = score / (1400 / 16);
+    const t    = setInterval(() => {
+      cur = Math.min(cur + step, score);
+      el.textContent = Math.round(cur) + '%';
+      if (cur >= score) clearInterval(t);
+    }, 16);
+  </script>
+
+</body>
+</html>

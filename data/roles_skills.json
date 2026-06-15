@@ -1,0 +1,121 @@
+{
+    "Data Analyst": {
+        "skills": {
+            "SQL": 10,
+            "Python": 9,
+            "Statistics": 8,
+            "Pandas": 8,
+            "Data Cleaning": 8,
+            "Power BI": 8,
+            "Data Visualization": 7,
+            "Excel": 6,
+            "NumPy": 5,
+            "Dashboarding": 5
+        },
+        "recommended_projects": [
+            "Sales Dashboard Analysis",
+            "Customer Churn Analysis",
+            "E-commerce Analytics Dashboard"
+        ],
+        "recommended_certifications": [
+            "Google Data Analytics",
+            "Microsoft Power BI Data Analyst"
+        ]
+    },
+
+    "Data Scientist": {
+        "skills": {
+            "Python": 10,
+            "Machine Learning": 10,
+            "Statistics": 9,
+            "Pandas": 8,
+            "NumPy": 8,
+            "SQL": 8,
+            "Feature Engineering": 8,
+            "Scikit-Learn": 8,
+            "Data Visualization": 7,
+            "Deep Learning": 7
+        },
+        "recommended_projects": [
+            "House Price Prediction",
+            "Customer Segmentation",
+            "Recommendation System"
+        ],
+        "recommended_certifications": [
+            "IBM Data Science Professional Certificate",
+            "Machine Learning Specialization"
+        ]
+    },
+
+    "Web Developer": {
+        "skills": {
+            "HTML": 10,
+            "CSS": 9,
+            "JavaScript": 10,
+            "Responsive Design": 8,
+            "Git": 7,
+            "GitHub": 7,
+            "REST API": 7,
+            "Flask": 6,
+            "Database Management": 6,
+            "Debugging": 6
+        },
+        "recommended_projects": [
+            "Portfolio Website",
+            "Blog Application",
+            "E-commerce Website"
+        ],
+        "recommended_certifications": [
+            "Meta Front-End Developer",
+            "Responsive Web Design Certification"
+        ]
+    },
+
+    "Python Developer": {
+        "skills": {
+            "Python": 10,
+            "OOP": 9,
+            "Data Structures": 8,
+            "Algorithms": 8,
+            "SQL": 7,
+            "Git": 7,
+            "GitHub": 7,
+            "Flask": 7,
+            "REST API": 7,
+            "Debugging": 6
+        },
+        "recommended_projects": [
+            "Task Management System",
+            "API Development Project",
+            "Automation Tool"
+        ],
+        "recommended_certifications": [
+            "Python for Everybody",
+            "PCAP Python Certification"
+        ]
+    },
+
+    "Machine Learning Engineer": {
+        "skills": {
+            "Python": 10,
+            "Machine Learning": 10,
+            "Deep Learning": 9,
+            "Statistics": 8,
+            "Scikit-Learn": 8,
+            "TensorFlow": 8,
+            "PyTorch": 8,
+            "Feature Engineering": 8,
+            "Model Deployment": 7,
+            "MLOps": 7
+        },
+        "recommended_projects": [
+            "Image Classification System",
+            "Fraud Detection Model",
+            "End-to-End ML Pipeline"
+        ],
+        "recommended_certifications": [
+            "Deep Learning Specialization",
+            "Machine Learning Engineering for Production"
+        ]
+    }
+}

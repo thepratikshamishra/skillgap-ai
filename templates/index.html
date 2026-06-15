@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillGap AI — Know Where You Stand</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Analyzing your profile...</div>
+    <div class="loading-sub">Generating AI roadmap with Llama 3</div>
+  </div>
+
+  <div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+      <a class="nav-logo" href="/">SkillGap AI</a>
+      <span class="nav-badge">Powered by Llama 3</span>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-eyebrow">Career Intelligence</div>
+      <h1>Know exactly<br><span>where you stand.</span></h1>
+      <p class="hero-sub">
+        Drop your skills or upload your resume. Get your readiness score,
+        skill gap breakdown, and a week-by-week AI learning roadmap — in seconds.
+      </p>
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="stat-number">5</span>
+          <span class="stat-label">Target Roles</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">50+</span>
+          <span class="stat-label">Skills Tracked</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">AI</span>
+          <span class="stat-label">Roadmap Gen</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Error message (if any) -->
+    {% if error %}
+    <div class="error-banner">⚠ {{ error }}</div>
+    {% endif %}
+
+    <!-- Form card -->
+    <div class="form-card">
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="manual">✎ Enter Manually</button>
+        <button class="tab" data-tab="resume">⬆ Upload Resume</button>
+      </div>
+
+      <!-- Manual tab -->
+      <div class="tab-panel active" id="tab-manual">
+        <form action="/analyze" method="POST" id="manualForm">
+          <div class="form-grid">
+
+            <div class="field-group">
+              <label class="field-label" for="target_role_manual">Target Role</label>
+              <select name="target_role" id="target_role_manual">
+                <option>Data Analyst</option>
+                <option>Data Scientist</option>
+                <option>Web Developer</option>
+                <option>Python Developer</option>
+                <option>Machine Learning Engineer</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="skills">Your Current Skills</label>
+              <textarea
+                name="skills"
+                id="skills"
+                rows="5"
+                placeholder="Python, SQL, Pandas, NumPy, Power BI..."
+                required
+              ></textarea>
+              <span class="skill-hint">
+                Separate with commas &nbsp;·&nbsp;
+                Example: <code>Python, SQL, Pandas</code>
+              </span>
+            </div>
+
+            <button type="submit" class="btn-analyze" id="manualBtn">
+              Analyze My Skills
+              <span class="btn-arrow">→</span>
+            </button>
+
+          </div>
+        </form>
+      </div>
+
+      <!-- Resume tab -->
+      <div class="tab-panel" id="tab-resume">
+        <form action="/analyze-resume" method="POST" enctype="multipart/form-data" id="resumeForm">
+          <div class="form-grid">
+
+            <div class="field-group">
+              <label class="field-label" for="target_role_resume">Target Role</label>
+              <select name="target_role" id="target_role_resume">
+                <option>Data Analyst</option>
+                <option>Data Scientist</option>
+                <option>Web Developer</option>
+                <option>Python Developer</option>
+                <option>Machine Learning Engineer</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Upload Your Resume (PDF)</label>
+              <div class="upload-zone" id="uploadZone">
+                <input
+                  type="file"
+                  name="resume"
+                  id="resumeInput"
+                  accept=".pdf"
+                  required
+                  style="display:none"
+                >
+                <div class="upload-icon">⬆</div>
+                <div class="upload-text" id="uploadText">
+                  Click to upload or drag & drop
+                </div>
+                <div class="upload-sub">PDF only · Max 5MB</div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-analyze" id="resumeBtn">
+              Analyze My Resume
+              <span class="btn-arrow">→</span>
+            </button>
+
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // ── Tab switching ──
+    const tabs    = document.querySelectorAll('.tab');
+    const panels  = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ── Upload zone ──
+    const zone        = document.getElementById('uploadZone');
+    const input       = document.getElementById('resumeInput');
+    const uploadText  = document.getElementById('uploadText');
+
+    zone.addEventListener('click', () => input.click());
+
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      zone.classList.add('dragover');
+    });
+
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type === 'application/pdf') {
+        input.files = e.dataTransfer.files;
+        uploadText.textContent = '✓ ' + file.name;
+        zone.classList.add('has-file');
+      }
+    });
+
+    input.addEventListener('change', () => {
+      if (input.files[0]) {
+        uploadText.textContent = '✓ ' + input.files[0].name;
+        zone.classList.add('has-file');
+      }
+    });
+
+    // ── Loading overlay ──
+    document.getElementById('manualForm').addEventListener('submit', () => {
+      document.getElementById('loadingText').textContent = 'Analyzing your skills...';
+      document.getElementById('loadingOverlay').classList.add('active');
+    });
+
+    document.getElementById('resumeForm').addEventListener('submit', () => {
+      document.getElementById('loadingText').textContent = 'Reading your resume...';
+      document.getElementById('loadingOverlay').classList.add('active');
+    });
+  </script>
+
+</body>
+</html>
