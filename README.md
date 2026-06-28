@@ -1,5 +1,4 @@
-# SkillGap AI 🤖
-
+# SkillGap AI 🤖 
 **Know exactly where you stand — before you apply.**                  
        
 Ever wondered why you're not getting calls even after applying to 50+ jobs?  
